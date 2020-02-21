@@ -6,10 +6,24 @@ export default StyleSheet.create({
         position: "absolute",
         height: 80,
         // backgroundColor: "white",
-        padding : 10,
+        padding : 5,
         width : screen.width,
         flexDirection : "row",
         justifyContent : "space-between",
         alignItems : "center"
-    }
+    },
+    SearchBar: {
+        width : screen.width,
+        height : 60,
+        position : "absolute",
+        backgroundColor : "white",
+        
+        // marginTop : 20,
+        flexDirection : "row",
+        // justifyContent : "space-around",
+        alignItems : "center",
+        padding : 15,
+        elevation : 3
+        // backgroundColor : "grey"
+    },
 })

@@ -7,6 +7,7 @@ import Navigate from './src/navigations'
 import { Login } from './src/screens';
 import { CrimeInfoScreen } from './src/screens'
 import { createStackNavigator } from 'react-navigation-stack';
+import Fire from './src/config/api';
 
 import {
   createAppContainer,
@@ -29,11 +30,11 @@ const MainStackNavigator = createStackNavigator(
     Drawer: { 
       screen : Navigate,
       navigationOptions : {
-        header : null
+        header : null,
       }
     },
   },{
-    
+
   }
 )
 

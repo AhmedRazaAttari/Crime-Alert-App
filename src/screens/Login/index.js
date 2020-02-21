@@ -63,7 +63,7 @@ export default class login extends Component {
 
     async componentDidMount() {
         if (this.state.hasPermission == null) {
-            const { status } = await Permissions.askAsync(Permissions.LOCATION);
+            const { status } = await Permissions.askAsync(Permissions.LOCATION, Permissions.NOTIFICATIONS);
             this.setState({ hasPermission: status === 'granted' });
         }
         // await Location.requestPermissionsAsync()
@@ -141,11 +141,9 @@ export default class login extends Component {
                         Username: user.user.displayName,
                         Profile: user.user.photoURL,
                         Email: user.user.email,
-                        // DevicesRegistered: {
-
-                        // }
+                        
                     })
-                    
+
                 }).then(() => {
                     var newPostKey = config.database().ref().child('posts').push().key;
                     var userID = config.auth().currentUser.uid
@@ -160,7 +158,7 @@ export default class login extends Component {
                         }
                     })
                         .then((success) => {
-                            this.props.navigation.push('Drawer', { ExpoToken: CurrentExpoToken })
+                            this.props.navigation.push('Drawer')
                         })
 
                 })

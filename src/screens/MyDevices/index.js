@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, TextInput } from 'react-native';
 import Fire from '../../config/api';
 const screen = Dimensions.get("screen");
 import MapView, { Marker, AnimatedRegion } from 'react-native-maps';
 import Styles from './style';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 
 const ASPECT_RATIO = screen.width / screen.height;
 const LATITUDE = 24.8822179;
@@ -25,17 +26,37 @@ export default class MyDevices extends Component {
             coordinate: new AnimatedRegion({
                 latitude: LATITUDE,
                 longitude: LONGITUDE,
-                longitudeDelta : LONGITUDE_DELTA
+                longitudeDelta: LONGITUDE_DELTA
             }),
             devices: [],
-            
+
         }
+    }
+
+    SearchBar() {
+        return <View style={Styles.SearchBar}>
+            <TouchableOpacity onPress={() => this.props.navigation.toggleDrawer()}>
+                <MaterialIcons name="view-headline" size={28} />
+            </TouchableOpacity>
+            <Text style={{color : "olive", fontSize : 19, marginLeft : 30}}>Your Registere Devices</Text>
+            {/* <TextInput placeholder="Search or Enter Place" style={Styles.TextINput} value={this.state.searchLoc} onChangeText={(searchLoc) => { this.setState({ searchLoc }) }} /> */}
+            {/* <TouchableOpacity onPress={() => this.searchLoc()}>
+                <FontAwesome name="search" size={23} />
+            </TouchableOpacity> */}
+        </View>
+    }
+
+    userDevices(){
+        
     }
 
     map() {
         return <MapView
             style={{ flex: 1 }}
-
+            showsUserLocation={true}
+            followsUserLocation={true}
+            scrollEnabled={true}
+            zoomEnabled={true}
             initialRegion={{
                 latitude: LATITUDE,
                 longitude: LONGITUDE,
@@ -51,7 +72,7 @@ export default class MyDevices extends Component {
                 coordinate={{
                     latitude: this.state.marker_lat,
                     longitude: this.state.marker_long,
-                    longitudeDelta : this.state
+                    longitudeDelta: this.state
                 }}
             />
         </MapView>
@@ -61,7 +82,7 @@ export default class MyDevices extends Component {
     componentDidMount() {
 
         const userId = Fire.auth().currentUser.uid
-        
+
         var _ = this;
         Fire.database().ref("users/" + userId).child("DevicesRegistered").once("value").then(function (snapshot) {
             let items = [];
@@ -82,24 +103,24 @@ export default class MyDevices extends Component {
 
     }
 
-    ShowMyDevices() {
-        return <View style={Styles.ShowDevices}>
-            <TouchableOpacity onPress={() => this.props.navigation.toggleDrawer()}>
-                <MaterialIcons name="view-headline" size={28} />
-            </TouchableOpacity>
-            {/* <View style={{ height: 35, width: 70, backgroundColor: "#03a5fc", borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
-                <Text style={{ color: "white" }}>Device</Text>
-            </View> */}
-            {itm.map((item => console.log(item)))}
-            {itm.map((item, i) => {
-                return <TouchableOpacity key={i} onPress={() => console.log("DEVICEID", item.deviceid)}>
-                    <View style={{ height: 35, width: 70, backgroundColor: "#03a5fc", borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
-                        <Text style={{ color: "white" }}>{item.devicename}</Text>
-                    </View>
-                </TouchableOpacity>
-            })}
-        </View>
-    }
+    // ShowMyDevices() {
+    //     return <View style={Styles.ShowDevices}>
+    //         <TouchableOpacity onPress={() => this.props.navigation.toggleDrawer()}>
+    //             <MaterialIcons name="view-headline" size={28} />
+    //         </TouchableOpacity>
+    //         {/* <View style={{ height: 35, width: 70, backgroundColor: "#03a5fc", borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
+    //             <Text style={{ color: "white" }}>Device</Text>
+    //         </View> */}
+    //         {itm.map((item => console.log(item)))}
+    //         {itm.map((item, i) => {
+    //             return <TouchableOpacity key={i} onPress={() => this.trackLocation(item.deviceid)}>
+    //                 <View style={{ height: 35, width: 70, backgroundColor: "#03a5fc", borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
+    //                     <Text style={{ color: "white" }}>{item.devicename}</Text>
+    //                 </View>
+    //             </TouchableOpacity>
+    //         })}
+    //     </View>
+    // }
 
     // distance(lat1, lon1, lat2, lon2, unit) {
     //     if ((lat1 == lat2) && (lon1 == lon2)) {
@@ -132,10 +153,20 @@ export default class MyDevices extends Component {
     //     }.bind(this), 4000)
     // }
 
-    fetchLocation(devicename, deviceid, devicetoken) {
-        console.log(devicename)
+    trackLocation(deviceid) {
         console.log(deviceid)
-        console.log(devicetoken)
+        const UserID = Fire.auth().currentUser.uid
+        // console.log("UserId")
+        var latitude, longitude
+        Fire.database().ref("users/" + UserID).child("DevicesRegistered" + "/" + deviceid).once("value").then(function (snapshot) {
+            console.log(snapshot.val())
+            latitude = snapshot.val().Location.latitude
+            longitude = snapshot.val().Location.longitude
+        })
+        this.setState({
+            marker_lat: latitude,
+            marker_long: longitude
+        })
     }
 
 
@@ -144,9 +175,10 @@ export default class MyDevices extends Component {
 
         return (
             <View style={{ flex: 1 }}>
-                {this.map()}
-                {!isloading && this.ShowMyDevices()}
-                {/* {isloading && this.timing()} */}
+                {/* {this.map()} */}
+                {this.SearchBar()}
+                {/* {!isloading && this.ShowMyDevices()} */}
+
             </View>
         )
     }
